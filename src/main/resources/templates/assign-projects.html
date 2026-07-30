@@ -1,397 +1,89 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
-
 <head>
-
-    <meta charset="utf-8" />
-    <title>Admin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="/assets/images/favicon.ico">
-
-    <!-- preloader css -->
-    <link rel="stylesheet" href="/assets/css/preloader.min.css" type="text/css" />
-
-    <!-- Bootstrap Css -->
-    <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-
-
-    <!-- DataTables -->
-    <link href="/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-
-    <!-- Responsive datatable examples -->
-    <link href="/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet"
-        type="text/css" />
-
-
-    <!-- Include Select2 CSS & JS (Make sure jQuery is included in your project) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="/assets/js/auth-check.js"></script>
+    <title>Assign Projects | Survey Panel</title>
+    <th:block th:replace="~{fragments/layout :: adminHead}"></th:block>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"/>
 </head>
 
 <body>
+<div id="layout-wrapper">
 
-    <!-- <body data-layout="horizontal"> -->
+    <header id="page-topbar" th:replace="~{fragments/layout :: adminHeader}"></header>
 
-    <!-- Begin page -->
-    <div id="layout-wrapper">
+    <div class="vertical-menu" th:replace="~{fragments/layout :: adminSidebar}"></div>
 
-
-        <header id="page-topbar">
-            <div class="navbar-header">
-                <div class="d-flex">
-                    <!-- LOGO -->
-                    <div class="navbar-brand-box">
-                        <a href="/analytics" class="logo logo-dark">
-                            <span class="logo-sm">
-                                <img src="/assets/images/logo-sm.svg" alt="" height="24">
-                            </span>
-                            <span class="logo-lg">
-                                <img src="/assets/images/logo-sm.svg" alt="" height="24"> <span class="logo-txt" th:text="${companyName}">Amigo insight</span>
-                            </span>
-                        </a>
-
-                        <a href="/analytics" class="logo logo-light">
-                            <span class="logo-sm">
-                                <img src="/assets/images/logo-sm.svg" alt="" height="24">
-                            </span>
-                            <span class="logo-lg">
-                                <img src="/assets/images/logo-sm.svg" alt="" height="24">
-                                <span class="logo-txt" th:text="${companyName}">Amigo insight</span>
-                            </span>
-                        </a>
-                    </div>
-
-                    <button type="button" class="btn btn-sm px-3 font-size-16 header-item" id="vertical-menu-btn">
-                        <i class="fa fa-fw fa-bars"></i>
-                    </button>
-
-                    <!-- App Search-->
-
-                </div>
-
-                <div class="d-flex">
-
-
-
-
-
-
-                    <div class="dropdown d-inline-block">
-                        <button type="button" class="btn header-item bg-light-subtle border-start border-end"
-                            id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                            <img class="rounded-circle header-profile-user" src="/assets/images/users/avatar-1.jpg"
-                                alt="Header Avatar">
-                            <span class="d-none d-xl-inline-block ms-1 fw-medium">Admin</span>
-                            <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                            <a class="dropdown-item" href="apps-contacts-profile.html"><i
-                                    class="mdi mdi mdi-face-man font-size-16 align-middle me-1"></i> Profile</a>
-                            <a class="dropdown-item" href="auth-lock-screen.html"><i
-                                    class="mdi mdi-lock font-size-16 align-middle me-1"></i> Lock Screen</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="auth-logout.html"><i
-                                    class="mdi mdi-logout font-size-16 align-middle me-1"></i> Logout</a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </header>
-
-        <!-- ========== Left Sidebar Start ========== -->
-        <div class="vertical-menu">
-
-            <div data-simplebar class="h-100">
-
-                <!--- Sidemenu -->
-                <div id="sidebar-menu">
-                    <!-- Left Menu Start -->
-                    <ul class="metismenu list-unstyled" id="side-menu">
-                        <li class="menu-title" data-key="t-menu">Menu</li>
-                        <li>
-                            <a href="/dashboard">
-                                <i class="fa fa-fw fa-tachometer-alt" title="Dashboard"></i>
-                                <span data-key="t-dashboard">Dashboard</span>
-                            </a>
-                        </li>
-
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i class="fa fa-fw fa-folder" title="Projects"></i>
-                                <span data-key="t-dashboard">Projects</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li>
-                                    <a href="/project/table">
-                                        <span data-key="t-calendar">Projects</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="/create/projects">
-                                        <span data-key="t-chat">Create Projects</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="/assign/projects">
-                                        <span data-key="t-chat">Assign Projects</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i class="fa fa-handshake" title="Projects"></i>
-                                <span data-key="t-dashboard">Vendor</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li>
-                                    <a href="/create/vendor">
-                                        <span data-key="t-calendar">Create Vendor</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="/show/vendors">
-                                        <span data-key="t-chat">Show Vendor</span>
-                                    </a>
-                                </li>
-
-                                
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a href="javascript: void(0);" class="has-arrow">
-                                <i class="fa fa-users" title="Projects"></i>
-                                <span data-key="t-dashboard">Client</span>
-                            </a>
-                            <ul class="sub-menu" aria-expanded="false">
-                                <li>
-                                    <a href="/create/client">
-                                        <span data-key="t-calendar">Create Client</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="/show/clients">
-                                        <span data-key="t-chat">Show Client</span>
-                                    </a>
-                                </li>
-
-                                
-                            </ul>
-                        </li>
-
-                        <li>
-                            <a href="/redirectLinks">
-                                <i class="fa fa-fw fa-tachometer-alt" title="Dashboard"></i>
-                                <span data-key="t-dashboard">Redirects</span>
-                            </a>
-                        </li>
-
-                    </ul>
-
-
-                </div>
-                <!-- Sidebar -->
-            </div>
-        </div>
-        <!-- Left Sidebar End -->
-
-
-
-        <!-- ============================================================== -->
-        <!-- Start right Content here -->
-        <!-- ============================================================== -->
-        <div class="main-content">
-
-            <div class="page-content">
-                <div class="container-fluid">
-
-                    <!-- start page title -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0 font-size-18">Assign Projects</h4>
-
-                                <div class="page-title-right">
-                                    <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
-                                        <li class="breadcrumb-item active">Projects</li>
-                                    </ol>
-                                </div>
-
+    <div class="main-content">
+        <div class="page-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                            <h4 class="mb-sm-0 font-size-18">Assign Projects</h4>
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
+                                    <li class="breadcrumb-item active">Projects</li>
+                                </ol>
                             </div>
                         </div>
                     </div>
-                    <!-- end page title -->
+                </div>
+            </div>
 
-                </div> <!-- container-fluid -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <form id="addForm">
+                                    <div class="row">
 
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <form id="addForm">
-                                        
-                                        <div class="row">
-                                           
-                                            <div class="col-lg-6 mb-3">
-                                                <label for="projects" class="form-label">Select Projects</label>
-                                                <select class="form-control select2" id="projects" name="projects[]" multiple>
-                                                    <option value="PJ001">Project 1</option>
-                                                    <option value="PJ002">Project 2</option>
-                                                    <option value="PJ003">Project 3</option>
-                                                    <option value="PJ004">Project 4</option>
-                                                </select>
-                                            </div>
-                                        
-                                            <!-- Single Select for Vendor -->
-                                            <div class="col-lg-6 mb-3">
-                                                <label for="vendors" class="form-label">Select Vendor</label>
-                                                <select class="form-control select2" id="vendors" name="vendors[]" multiple>
-                                                    <option value="">-- Select Vendor --</option>
-                                                    <option value="V001">Vendor 1</option>
-                                                    <option value="V002">Vendor 2</option>
-                                                    <option value="V003">Vendor 3</option>
-                                                </select>
-                                            </div>
-
-
-
-
-
-
-                                            
-                                            <button type="submit" id="submitForm"
-                                                class="btn btn-primary mt-4">Submit</button>
-                                            <!-- Loader (hidden initially) -->
-                                            <div id="loader" class="text-center mt-3" style="display:none;">
-                                                <div class="spinner-border text-primary" role="status">
-                                                </div>
-                                            </div>
-                                            <!-- end col -->
+                                        <div class="col-lg-6 mb-3">
+                                            <label for="projects" class="form-label">Select Projects</label>
+                                            <select class="form-control select2" id="projects" name="projects[]" multiple>
+                                                <option value="PJ001">Project 1</option>
+                                                <option value="PJ002">Project 2</option>
+                                                <option value="PJ003">Project 3</option>
+                                                <option value="PJ004">Project 4</option>
+                                            </select>
                                         </div>
-                                        <!-- end row -->
-                                    </form>
-                                    <!-- end form -->
-                                </div>
-                                <!-- end card body -->
-                            </div>
-                            <!-- end card -->
-                        </div>
-                        <!-- end col -->
-                    </div>
-                </div>
-            </div>
-            <!-- End Page-content -->
 
+                                        <div class="col-lg-6 mb-3">
+                                            <label for="vendors" class="form-label">Select Vendor</label>
+                                            <select class="form-control select2" id="vendors" name="vendors[]" multiple>
+                                                <option value="">-- Select Vendor --</option>
+                                                <option value="V001">Vendor 1</option>
+                                                <option value="V002">Vendor 2</option>
+                                                <option value="V003">Vendor 3</option>
+                                            </select>
+                                        </div>
 
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <script>document.write(new Date().getFullYear())</script> © <span th:text="${companyName}">Company</span>.
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="text-sm-end d-none d-sm-block">
-                                Design & Develop by <a href="#!" class="text-decoration-underline" th:text="${companyName}">AmigoInsight</a>
+                                        <button type="submit" id="submitForm" class="btn btn-primary mt-4">Submit</button>
+                                        <div id="loader" class="text-center mt-3" style="display:none;">
+                                            <div class="spinner-border text-primary" role="status"></div>
+                                        </div>
+
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </footer>
-        </div>
-        <!-- end main content-->
-
-
-        <!-- Modal -->
-        <div class="modal fade" id="linksModal" tabindex="-1" aria-labelledby="linksModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="linksModalLabel">Project Links</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h6>Original Link:</h6>
-                        <p><a href="#" id="originalLink" target="_blank">Click Here</a></p>
-
-                        <h6>Countries by Links:</h6>
-                        <ul id="countryList"></ul>
                     </div>
                 </div>
             </div>
         </div>
 
-
+        <footer class="footer" th:replace="~{fragments/layout :: adminFooter}"></footer>
     </div>
-    <!-- END layout-wrapper -->
 
-    <!-- JAVASCRIPT -->
-    <script src="/assets/libs/jquery/jquery.min.js"></script>
-    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/assets/libs/metismenu/metisMenu.min.js"></script>
-    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="/assets/libs/node-waves/waves.min.js"></script>
-    <script src="/assets/libs/feather-icons/feather.min.js"></script>
-    <!-- pace js -->
-    <script src="/assets/libs/pace-js/pace.min.js"></script>
+</div>
 
-    <script src="/assets/js/app.js"></script>
+<th:block th:replace="~{fragments/layout :: adminScripts}"></th:block>
+<th:block th:replace="~{fragments/layout :: dataTableScripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<script>var allText = /*[[${'All'}]]*/ 'All';</script>
+<script src="/assets/js/pages/assign-projects.js"></script>
 
-
-
-
-
-
-    <!-- Required DataTables JS -->
-    <script src="/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    <script src="/assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
-    <script src="/assets/libs/jszip/jszip.min.js"></script>
-    <script src="/assets/libs/pdfmake/build/pdfmake.min.js"></script>
-    <script src="/assets/libs/pdfmake/build/vfs_fonts.js"></script>
-    <script src="/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
-    <script src="/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
-    <script src="/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
-    <script src="/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
-    <script src="/assets/js/pages/datatables.init.js"></script>
-
-    <!-- pace js -->
-    <script src="/assets/libs/pace-js/pace.min.js"></script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-
-    <script>
-        var allText = /*[[${'All'}]]*/ 'All';
-    </script>
-
-    <!-- Assign Projects page JavaScript -->
-    <script src="/assets/js/pages/assign-projects.js"></script>
 </body>
-
 </html>

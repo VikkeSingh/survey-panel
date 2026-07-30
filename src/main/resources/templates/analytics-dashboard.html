@@ -2,250 +2,223 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta charset="utf-8" />
-    <title>Analytics Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Survey Traffic Analytics Dashboard" name="description" />
-    <meta content="Themesbrand" name="author" />
-
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="/assets/images/favicon.ico">
-
-    <!-- Bootstrap Css -->
-    <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
-    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
-    <link href="/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
-    <!-- Analytics Dashboard Custom Css -->
-    <link href="/assets/css/analytics-dashboard.css" rel="stylesheet" type="text/css" />
-
-    <script src="/assets/js/auth-check.js"></script>
+    <title>Analytics | Survey Panel</title>
+    <th:block th:replace="~{fragments/layout :: adminHead}"></th:block>
+    <link href="/assets/css/analytics-dashboard.css" rel="stylesheet" type="text/css"/>
 </head>
 
-<body data-layout="detached" data-topbar="colored">
+<body>
+<div id="layout-wrapper">
 
-    <div class="container-fluid">
-        <!-- Page Header -->
-        <div class="page-header-section">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h2 class="page-title">📊 Survey Traffic Analytics</h2>
-                    <p class="page-subtitle">Real-time insights into your survey performance</p>
+    <header id="page-topbar" th:replace="~{fragments/layout :: adminHeader}"></header>
+
+    <div class="vertical-menu" th:replace="~{fragments/layout :: adminSidebar}"></div>
+
+    <div class="main-content">
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <!-- Page Header -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                            <h4 class="mb-sm-0 font-size-18">Survey Traffic Analytics</h4>
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Admin</a></li>
+                                    <li class="breadcrumb-item active">Analytics</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6 text-end">
-                    <a href="/dashboard" class="btn btn-light btn-back-dashboard">
-                        <i class="mdi mdi-arrow-left"></i> Back to Dashboard
-                    </a>
+
+                <!-- Market Selector -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="market-selector-card">
+                            <label for="marketSelect" class="form-label">
+                                <i class="mdi mdi-earth"></i> Select Market
+                            </label>
+                            <select id="marketSelect" class="form-select">
+                                <option value="all">All Markets</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- KPI Metrics Cards -->
+                <div class="row metrics-row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-primary">
+                            <div class="metric-icon"><i class="mdi mdi-account-group"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Total Traffics</h6>
+                                <h3 class="metric-value" id="totalTrafficsValue">0</h3>
+                                <div class="metric-trend" id="totalTrafficsTrend">
+                                    <i class="mdi mdi-trending-up"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-success">
+                            <div class="metric-icon"><i class="mdi mdi-check-circle"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Completes %</h6>
+                                <h3 class="metric-value" id="completePercentValue">0%</h3>
+                                <div class="metric-trend" id="completePercentTrend">
+                                    <i class="mdi mdi-trending-up"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-warning">
+                            <div class="metric-icon"><i class="mdi mdi-close-circle"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Terminates %</h6>
+                                <h3 class="metric-value" id="terminatePercentValue">0%</h3>
+                                <div class="metric-trend" id="terminatePercentTrend">
+                                    <i class="mdi mdi-trending-down"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-danger">
+                            <div class="metric-icon"><i class="mdi mdi-shield-alert"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Security Terminate %</h6>
+                                <h3 class="metric-value" id="securityTerminatePercentValue">0%</h3>
+                                <div class="metric-trend" id="securityTerminatePercentTrend">
+                                    <i class="mdi mdi-trending-down"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-info">
+                            <div class="metric-icon"><i class="mdi mdi-inbox-full"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Over Quota %</h6>
+                                <h3 class="metric-value" id="quotaFullPercentValue">0%</h3>
+                                <div class="metric-trend" id="quotaFullPercentTrend">
+                                    <i class="mdi mdi-trending-up"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="metric-card metric-card-secondary">
+                            <div class="metric-icon"><i class="mdi mdi-chart-line-variant"></i></div>
+                            <div class="metric-content">
+                                <h6 class="metric-label">Total Drop %</h6>
+                                <h3 class="metric-value" id="totalDropPercentValue">0%</h3>
+                                <div class="metric-trend" id="totalDropPercentTrend">
+                                    <i class="mdi mdi-trending-down"></i>
+                                    <span>0%</span> from last month
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h5 class="chart-title">
+                                    <i class="mdi mdi-chart-bar"></i> Total Traffic
+                                </h5>
+                                <div class="chart-view-toggle btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary active" data-view="day">Day</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-view="month">Month</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" data-view="custom">Custom</button>
+                                </div>
+                            </div>
+
+                            <div class="custom-date-range" id="customDateRange" style="display: none;">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="date" class="form-control" id="startDate">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" id="endDate">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" id="applyCustomDate">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="trafficChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 mb-4">
+                        <div class="widget-card mb-3">
+                            <h6 class="widget-title">
+                                <i class="mdi mdi-account-check"></i> Reconcile Rate Current Month
+                            </h6>
+                            <div class="progress-circle-container">
+                                <div class="progress-circle" data-percent="0" id="reconcileRateCircle">
+                                    <svg class="progress-svg" viewBox="0 0 100 100">
+                                        <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                                        <circle class="progress-bar" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                    <div class="progress-text">
+                                        <span class="progress-value" id="reconcileRateValue">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-card">
+                            <h6 class="widget-title">
+                                <i class="mdi mdi-chart-donut"></i> Avg Platform Reconciliation
+                            </h6>
+                            <div class="progress-circle-container">
+                                <div class="progress-circle" data-percent="0" id="avgPlatformCircle">
+                                    <svg class="progress-svg" viewBox="0 0 100 100">
+                                        <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                                        <circle class="progress-bar progress-bar-secondary" cx="50" cy="50" r="45"></circle>
+                                    </svg>
+                                    <div class="progress-text">
+                                        <span class="progress-value" id="avgPlatformValue">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Market Selector -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="market-selector-card">
-                    <label for="marketSelect" class="form-label">
-                        <i class="mdi mdi-earth"></i> Select Market
-                    </label>
-                    <select id="marketSelect" class="form-select">
-                        <option value="all">All Markets</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- KPI Metrics Cards -->
-        <div class="row metrics-row">
-            <!-- Total Traffics -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-primary">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-account-group"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Total Traffics</h6>
-                        <h3 class="metric-value" id="totalTrafficsValue">0</h3>
-                        <div class="metric-trend" id="totalTrafficsTrend">
-                            <i class="mdi mdi-trending-up"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completes % -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-success">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-check-circle"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Completes %</h6>
-                        <h3 class="metric-value" id="completePercentValue">0%</h3>
-                        <div class="metric-trend" id="completePercentTrend">
-                            <i class="mdi mdi-trending-up"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Terminates % -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-warning">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-close-circle"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Terminates %</h6>
-                        <h3 class="metric-value" id="terminatePercentValue">0%</h3>
-                        <div class="metric-trend" id="terminatePercentTrend">
-                            <i class="mdi mdi-trending-down"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security Terminate % -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-danger">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-shield-alert"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Security Terminate %</h6>
-                        <h3 class="metric-value" id="securityTerminatePercentValue">0%</h3>
-                        <div class="metric-trend" id="securityTerminatePercentTrend">
-                            <i class="mdi mdi-trending-down"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Over Quota % -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-info">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-inbox-full"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Over Quota %</h6>
-                        <h3 class="metric-value" id="quotaFullPercentValue">0%</h3>
-                        <div class="metric-trend" id="quotaFullPercentTrend">
-                            <i class="mdi mdi-trending-up"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total Drop % -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="metric-card metric-card-secondary">
-                    <div class="metric-icon">
-                        <i class="mdi mdi-chart-line-variant"></i>
-                    </div>
-                    <div class="metric-content">
-                        <h6 class="metric-label">Total Drop %</h6>
-                        <h3 class="metric-value" id="totalDropPercentValue">0%</h3>
-                        <div class="metric-trend" id="totalDropPercentTrend">
-                            <i class="mdi mdi-trending-down"></i>
-                            <span>0%</span> from last month
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chart Section -->
-        <div class="row">
-            <div class="col-lg-8 mb-4">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h5 class="chart-title">
-                            <i class="mdi mdi-chart-bar"></i> Total Traffic
-                        </h5>
-                        <div class="chart-view-toggle btn-group" role="group">
-                            <button type="button" class="btn btn-sm btn-outline-primary active" data-view="day">Day</button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-view="month">Month</button>
-                            <button type="button" class="btn btn-sm btn-outline-primary" data-view="custom">Custom</button>
-                        </div>
-                    </div>
-
-                    <!-- Custom Date Range Picker (hidden by default) -->
-                    <div class="custom-date-range" id="customDateRange" style="display: none;">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <label class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDate">
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDate">
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button class="btn btn-primary w-100" id="applyCustomDate">Apply</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="trafficChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar Widgets -->
-            <div class="col-lg-4 mb-4">
-                <!-- Reconcile Rate -->
-                <div class="widget-card mb-3">
-                    <h6 class="widget-title">
-                        <i class="mdi mdi-account-check"></i> Reconcile Rate Current Month
-                    </h6>
-                    <div class="progress-circle-container">
-                        <div class="progress-circle" data-percent="0" id="reconcileRateCircle">
-                            <svg class="progress-svg" viewBox="0 0 100 100">
-                                <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
-                                <circle class="progress-bar" cx="50" cy="50" r="45"></circle>
-                            </svg>
-                            <div class="progress-text">
-                                <span class="progress-value" id="reconcileRateValue">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Platform Reconciliation Rate -->
-                <div class="widget-card">
-                    <h6 class="widget-title">
-                        <i class="mdi mdi-chart-donut"></i> Avg Platform Reconciliation
-                    </h6>
-                    <div class="progress-circle-container">
-                        <div class="progress-circle" data-percent="0" id="avgPlatformCircle">
-                            <svg class="progress-svg" viewBox="0 0 100 100">
-                                <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
-                                <circle class="progress-bar progress-bar-secondary" cx="50" cy="50" r="45"></circle>
-                            </svg>
-                            <div class="progress-text">
-                                <span class="progress-value" id="avgPlatformValue">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <footer class="footer" th:replace="~{fragments/layout :: adminFooter}"></footer>
     </div>
 
-    <!-- JAVASCRIPT -->
-    <script src="/assets/libs/jquery/jquery.min.js"></script>
-    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script src="/assets/js/analytics-dashboard.js"></script>
+</div>
+
+<th:block th:replace="~{fragments/layout :: adminScripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="/assets/js/analytics-dashboard.js"></script>
 
 </body>
 </html>
-

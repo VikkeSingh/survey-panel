@@ -36,8 +36,8 @@ public class AuthController {
     @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         logger.info("inside  /auth/login request : {}",request);
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+//        authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
