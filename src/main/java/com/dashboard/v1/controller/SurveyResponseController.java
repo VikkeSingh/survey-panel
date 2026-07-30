@@ -1,5 +1,6 @@
 package com.dashboard.v1.controller;
 
+import com.dashboard.v1.AppProperties;
 import com.dashboard.v1.entity.*;
 import com.dashboard.v1.repository.ProjectRepository;
 import com.dashboard.v1.repository.SecurityTerminateFlagRepository;
@@ -44,6 +45,7 @@ public class SurveyResponseController {
     private final RestTemplate restTemplate;
     private final ProjectVendorService projectVendorService;
     private final RequestLogService requestLogService;
+    final AppProperties appProperties;
 
     @GetMapping("/complete")
     public ModelAndView submitComplete(@RequestParam String UID, HttpServletRequest request) {
@@ -201,7 +203,7 @@ public class SurveyResponseController {
                     .body("No Vendor Redirects configured for status: " + status);
         }
 
-        vendorApiUrl = vendorApiUrl.replace("[AMI]", UID);
+        vendorApiUrl = vendorApiUrl.replace("[" + appProperties.getCompanyIdentifier() + "]", UID);
 
          logger.info("Notifying vendor at URL: {}", vendorApiUrl);
 

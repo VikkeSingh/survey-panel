@@ -26,10 +26,10 @@ public class RedirectsLinkController {
         logger.info("inside RedirectsController /redirects");
         Map<String, String> response = new HashMap<>();
 
-        response.put("complete", appProperties.getDomain() + "/survey/complete?UID=[AMI]");
-        response.put("terminate", appProperties.getDomain() + "/survey/terminate?UID=[AMI]");
-        response.put("quotafull", appProperties.getDomain() + "/survey/quotafull?UID=[AMI]");
-        response.put("securityTerminate", appProperties.getDomain() + "/survey/securityTerminate?UID=[AMI]");
+        response.put("complete", appProperties.getDomain() + "/survey/complete?UID=[" + appProperties.getCompanyIdentifier() + "]");
+        response.put("terminate", appProperties.getDomain() + "/survey/terminate?UID=[" + appProperties.getCompanyIdentifier() + "]");
+        response.put("quotafull", appProperties.getDomain() + "/survey/quotafull?UID=[" + appProperties.getCompanyIdentifier() + "]");
+        response.put("securityTerminate", appProperties.getDomain() + "/survey/securityTerminate?UID=[" + appProperties.getCompanyIdentifier() + "]");
 
         return ResponseEntity.ok(response);
     }

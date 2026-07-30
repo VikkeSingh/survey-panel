@@ -14,5 +14,6 @@ public class GlobalTemplateVariables {
     @ModelAttribute
     public void addGlobalAttributes(Model model) {
         model.addAttribute("companyName", appProperties.getCompanyName());
+        model.addAttribute("companyIdentifier", appProperties.getCompanyIdentifier());
     }
 }

@@ -14,11 +14,19 @@ if (!token) {
             "securityTerminate"
         ];
 
+        // Comes from app.company-identifier, rendered into <meta name="company-identifier">
+        const companyIdentifier = (document.querySelector('meta[name="company-identifier"]') || {}).content || "";
+        const requiredUrlToken = companyIdentifier ? "=[" + companyIdentifier + "]" : "";
+
+        if (!requiredUrlToken) {
+            console.warn("company-identifier is not configured; skipping the =[IDENTIFIER] URL check.");
+        }
+
         function isValidHttpsUrl(value) {
             return (
                 value &&
                 value.startsWith("https://") &&
-                value.includes("=[AMI]")
+                (!requiredUrlToken || value.includes(requiredUrlToken))
             );
         }
 
@@ -49,7 +57,7 @@ if (!token) {
             });
 
             if (hasError) {
-                alert("Please enter valid HTTPS URLs (must start with https://)");
+                alert("Please enter valid HTTPS URLs (must start with https:// and contain " + requiredUrlToken + ")");
                 return; // ❌ Stop API call
             }
 

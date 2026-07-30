@@ -19,6 +19,8 @@ public class AppProperties {
 
     private String companyName;
 
+    private String companyIdentifier;
+
     @PostConstruct
     public void init() {
     }

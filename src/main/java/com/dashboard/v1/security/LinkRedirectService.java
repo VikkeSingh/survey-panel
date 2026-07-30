@@ -1,5 +1,6 @@
 package com.dashboard.v1.security;
 
+import com.dashboard.v1.AppProperties;
 import com.dashboard.v1.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import java.util.Objects;
 public class LinkRedirectService {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkRedirectService.class);
+
+    final AppProperties appProperties;
 
     public ResponseEntity<String> passedSurvey(Project project,String uid, String pid, String country) {
         // redirect to main survey link
@@ -50,7 +53,7 @@ public class LinkRedirectService {
         String url = redirectUrl.trim();
 
         // Step 11: Build redirect URL
-        url = url.replace("[AMI]", uid);
+        url = url.replace("[" + appProperties.getCompanyIdentifier() + "]", uid);
 
         logger.info("Redirecting to survey URL: {}", url);
         logger.info("========== SURVEY CLICK SUCCESS - Redirecting ==========");
