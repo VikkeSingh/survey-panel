@@ -201,7 +201,7 @@ public class ProjectController {
 
             logger.info("Fetched {} projects for table data", response.size());
 
-            return ResponseEntity.ok(response);
+             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error fetching projects: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

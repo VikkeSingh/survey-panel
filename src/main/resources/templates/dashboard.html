@@ -393,10 +393,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+
                                 </tbody>
                             </table>
-                            
+
+                            <!-- ================= PAGINATION ================= -->
+                            <div class="d-flex flex-wrap align-items-center justify-content-between mt-2">
+                                <div id="paginationInfo" class="text-muted font-size-13">Loading...</div>
+                                <div class="btn-group">
+                                    <button type="button" id="firstPageBtn" class="btn btn-sm btn-outline-primary" disabled>&laquo; First</button>
+                                    <button type="button" id="prevPageBtn" class="btn btn-sm btn-outline-primary" disabled>&lsaquo; Prev</button>
+                                    <span id="pageIndicator" class="btn btn-sm btn-light disabled">Page 0 of 0</span>
+                                    <button type="button" id="nextPageBtn" class="btn btn-sm btn-outline-primary" disabled>Next &rsaquo;</button>
+                                    <button type="button" id="lastPageBtn" class="btn btn-sm btn-outline-primary" disabled>Last &raquo;</button>
+                                </div>
+                            </div>
+                            <!-- ================= END PAGINATION ================= -->
+
                         </div>
                     </div>
                 </div>

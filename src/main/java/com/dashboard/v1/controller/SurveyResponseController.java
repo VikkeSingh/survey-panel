@@ -12,6 +12,10 @@ import com.dashboard.v1.util.SslUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +27,16 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.dashboard.v1.entity.SurveyStatus.SECURITYTERMINATE;
@@ -37,6 +47,9 @@ import static com.dashboard.v1.entity.SurveyStatus.SECURITYTERMINATE;
 public class SurveyResponseController {
 
     private static final Logger logger = LoggerFactory.getLogger(SurveyResponseController.class);
+
+    /** Upper bound for a single page request (used by the dashboard export). */
+    private static final int MAX_PAGE_SIZE = 100000;
 
     private final SurveyResponseRepository surveyResponseRepository;
     private final ProjectRepository projectRepository;
@@ -177,6 +190,86 @@ public class SurveyResponseController {
     @GetMapping("/api/survey-responses/all")
     public List<SurveyResponse> getAllSurveyResponses() {
         return surveyResponseRepository.findAllOrderByCreatedAt();
+    }
+
+    /**
+     * Paginated + server side filtered survey responses used by the dashboard table.
+     * Returns at most {@code size} rows (default 1000) instead of the whole table.
+     */
+    @GetMapping("/api/survey-responses/paged")
+    public Map<String, Object> getSurveyResponsesPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1000") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String search) {
+
+        if (page < 0) page = 0;
+        if (size < 1) size = 1;
+        if (size > MAX_PAGE_SIZE) size = MAX_PAGE_SIZE;
+
+        Page<SurveyResponse> result = surveyResponseRepository.findAll(
+                buildFilterSpec(status, startDate, endDate, search),
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime")));
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("content", result.getContent());
+        body.put("page", result.getNumber());
+        body.put("size", result.getSize());
+        body.put("totalElements", result.getTotalElements());
+        body.put("totalPages", result.getTotalPages());
+        return body;
+    }
+
+    private Specification<SurveyResponse> buildFilterSpec(String status, String startDate,
+                                                          String endDate, String search) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (status != null && !status.trim().isEmpty()) {
+                try {
+                    predicates.add(cb.equal(root.get("status"), SurveyStatus.valueOf(status.trim().toUpperCase())));
+                } catch (IllegalArgumentException ex) {
+                    logger.warn("Ignoring unknown status filter: {}", status);
+                }
+            }
+
+            if (startDate != null && !startDate.trim().isEmpty()) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("startTime"),
+                        LocalDate.parse(startDate.trim()).atStartOfDay()));
+            }
+
+            if (endDate != null && !endDate.trim().isEmpty()) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("startTime"),
+                        LocalDate.parse(endDate.trim()).atTime(LocalTime.MAX)));
+            }
+
+            if (search != null && !search.trim().isEmpty()) {
+                String term = search.trim().toLowerCase();
+                String like = "%" + term + "%";
+
+                List<Predicate> matches = new ArrayList<>();
+                matches.add(cb.like(cb.lower(root.get("projectId")), like));
+                matches.add(cb.like(cb.lower(root.get("uId")), like));
+                matches.add(cb.like(cb.lower(root.get("ipAddress")), like));
+                matches.add(cb.like(cb.lower(root.get("country")), like));
+
+                List<SurveyStatus> matchingStatuses = new ArrayList<>();
+                for (SurveyStatus s : SurveyStatus.values()) {
+                    if (s.name().toLowerCase().contains(term)) {
+                        matchingStatuses.add(s);
+                    }
+                }
+                if (!matchingStatuses.isEmpty()) {
+                    matches.add(root.get("status").in(matchingStatuses));
+                }
+
+                predicates.add(cb.or(matches.toArray(new Predicate[0])));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 
     private String getVendorApiUrl(User vendor, SurveyStatus status) {

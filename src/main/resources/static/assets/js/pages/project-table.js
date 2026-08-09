@@ -14,6 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize filter button handlers
     initializeFilterButtons();
 
+    // Drop focus before Bootstrap marks a modal aria-hidden, otherwise the browser
+    // warns that a focused descendant (e.g. .btn-close) is hidden from assistive tech.
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('hide.bs.modal', function () {
+            if (modal.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+    });
+
     fetchAndPopulateTable(token);
 });
 
@@ -74,12 +84,6 @@ function populateTable(projects) {
         let row = document.createElement("tr");
 
 
-        // Store LOI, IR, Quota for the details modal
-        row.setAttribute('data-loi', project.loi || 'N/A');
-        row.setAttribute('data-ir', project.ir || 'N/A');
-        row.setAttribute('data-quota', project.quota || 'N/A');
-        row.setAttribute('data-cpi', project.cpi || 'N/A');
-
         row.innerHTML = `
             <td>${project.projectIdentifier}</td>
             <td>
@@ -114,10 +118,18 @@ function populateTable(projects) {
                 </div>
             </td>
             <td>
-                <button type="button" class="btn btn-success view-vendors">View Vendors</button>
+                <button type="button"
+                        class="btn btn-success view-vendors"
+                        data-project-id="${project.projectIdentifier}">View Vendors</button>
             </td>
             <td>
-                <button type="button" class="btn btn-info view-details">View Details</button>
+                <button type="button"
+                        class="btn btn-info view-details"
+                        data-project-id="${project.projectIdentifier}"
+                        data-loi="${project.loi || 'N/A'}"
+                        data-ir="${project.ir || 'N/A'}"
+                        data-quota="${project.quota || 'N/A'}"
+                        data-cpi="${project.cpi || 'N/A'}">View Details</button>
             </td>
             <td>
                 <button type="button"
@@ -359,13 +371,15 @@ document.addEventListener('click', function (event) {
     }
 
     // Handle View Details button
-    if (event.target.classList.contains('view-details')) {
-        const row = event.target.closest('tr');
-        const projectId = row.children[0].innerText;
-        const loi = row.getAttribute('data-loi');
-        const ir = row.getAttribute('data-ir');
-        const quota = row.getAttribute('data-quota');
-        const cpi = row.getAttribute('data-cpi');
+    if (event.target.closest('.view-details')) {
+        // Read from the button itself: on mobile, DataTables Responsive moves the
+        // button into a child row, so the parent <tr> no longer holds the data.
+        const button = event.target.closest('.view-details');
+        const projectId = button.getAttribute('data-project-id');
+        const loi = button.getAttribute('data-loi');
+        const ir = button.getAttribute('data-ir');
+        const quota = button.getAttribute('data-quota');
+        const cpi = button.getAttribute('data-cpi');
 
         // Populate the details modal
         document.getElementById('detailsProjectId').textContent = projectId;
@@ -375,7 +389,7 @@ document.addEventListener('click', function (event) {
         document.getElementById('detailsCpi').textContent = cpi;
 
         // Show the modal using Bootstrap's API
-        const detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        const detailsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('detailsModal'));
         detailsModal.show();
     }
 
@@ -451,10 +465,11 @@ document.addEventListener('click', function (event) {
     }
 
     // Handle View Vendors button
-    if (event.target.classList.contains('view-vendors')) {
+    if (event.target.closest('.view-vendors')) {
         const token = localStorage.getItem("jwtToken");
-        const row = event.target.closest('tr');
-        const projectId = row.children[0].innerText;
+        // Read from the button itself: on mobile, DataTables Responsive moves the
+        // button into a child row, so row.children[0] is not the project id cell.
+        const projectId = event.target.closest('.view-vendors').getAttribute('data-project-id');
 
         // Fetch vendor list for the project
         fetch('/projects/vendor-list', {
@@ -511,7 +526,7 @@ document.addEventListener('click', function (event) {
             }
 
             // Show the modal using Bootstrap's API
-            const vendorsModal = new bootstrap.Modal(document.getElementById('vendorsModal'));
+            const vendorsModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('vendorsModal'));
             vendorsModal.show();
         })
         .catch(error => {
