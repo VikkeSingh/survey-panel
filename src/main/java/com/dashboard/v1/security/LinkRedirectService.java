@@ -63,7 +63,7 @@ public class LinkRedirectService {
 
     public ModelAndView rejectedSurvey(SurveyRejection type) {
         ModelAndView modelAndView = new ModelAndView("rejection-page");
-        modelAndView.addObject("companyName", "Amigo Insight");
+        modelAndView.addObject("companyName", appProperties.getCompanyName());
 
         switch (type) {
             case IP:
