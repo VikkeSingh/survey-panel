@@ -8,7 +8,6 @@ import com.dashboard.v1.repository.SurveyResponseRepository;
 import com.dashboard.v1.repository.UserRepository;
 import com.dashboard.v1.service.ProjectVendorService;
 import com.dashboard.v1.service.RequestLogService;
-import com.dashboard.v1.util.SslUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +21,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -55,7 +54,6 @@ public class SurveyResponseController {
     private final ProjectRepository projectRepository;
     private final SecurityTerminateFlagRepository securityTerminateFlagRepository;
     private final UserRepository userRepository;
-    private final RestTemplate restTemplate;
     private final ProjectVendorService projectVendorService;
     private final RequestLogService requestLogService;
     final AppProperties appProperties;
@@ -298,26 +296,13 @@ public class SurveyResponseController {
 
         vendorApiUrl = vendorApiUrl.replace("[" + appProperties.getCompanyIdentifier() + "]", UID);
 
-         logger.info("Notifying vendor at URL: {}", vendorApiUrl);
+        logger.info("Redirecting browser to vendor URL: {}", vendorApiUrl);
 
-        try {
-            SslUtil.disableSslVerification();
+        URI vendorUri = UriComponentsBuilder.fromUriString(vendorApiUrl).build(true).toUri();
 
-            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(vendorApiUrl);
-            ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);
-
-            ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
-            if (response.getHeaders().getContentType() != null) {
-                responseBuilder.contentType(response.getHeaders().getContentType());
-            }
-            return responseBuilder.body(response.getBody());
-
-        } catch (Exception e) {
-            logger.error("Failed to notify vendor at URL: {}", vendorApiUrl, e);
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to notify vendor: " + e.getMessage());
-        }
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(vendorUri)
+                .build();
     }
 
 }
