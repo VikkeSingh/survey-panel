@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
@@ -61,36 +61,36 @@ public class SurveyResponseController {
     final AppProperties appProperties;
 
     @GetMapping("/complete")
-    public ModelAndView submitComplete(@RequestParam String UID, HttpServletRequest request) {
+    public ResponseEntity<String> submitComplete(@RequestParam String UID, HttpServletRequest request) {
         logger.info("inside SurveyResponseController /survey/complete UID : {}", UID);
         return saveSurveyResponse(UID, SurveyStatus.COMPLETE, request);
     }
 
     @GetMapping("/terminate")
-    public ModelAndView submitTerminate(@RequestParam String UID, HttpServletRequest request) {
+    public ResponseEntity<String> submitTerminate(@RequestParam String UID, HttpServletRequest request) {
         logger.info("inside SurveyResponseController /survey/terminate UID : {}", UID);
         return saveSurveyResponse(UID, SurveyStatus.TERMINATE, request);
     }
 
     @GetMapping("/quotafull")
-    public ModelAndView submitQuotaFull(@RequestParam String UID, HttpServletRequest request) {
+    public ResponseEntity<String> submitQuotaFull(@RequestParam String UID, HttpServletRequest request) {
         logger.info("inside SurveyResponseController /survey/quotafull UID : {}", UID);
         return saveSurveyResponse(UID, SurveyStatus.QUOTAFULL, request);
     }
 
     @GetMapping("/securityTerminate")
-    public ModelAndView submitSecurityTerminate(@RequestParam String UID, HttpServletRequest request) {
+    public ResponseEntity<String> submitSecurityTerminate(@RequestParam String UID, HttpServletRequest request) {
         logger.info("inside SurveyResponseController /survey/securityTerminate UID : {}", UID);
         return saveSurveyResponse(UID, SECURITYTERMINATE, request);
     }
 
-    private ModelAndView saveSurveyResponse(String UID, SurveyStatus status, HttpServletRequest request) {
+    private ResponseEntity<String> saveSurveyResponse(String UID, SurveyStatus status, HttpServletRequest request) {
         // Validate the project exists.
 
         Optional<SurveyResponse> surveyResponse = surveyResponseRepository.findByUId(UID);
 
         if(!surveyResponse.isPresent()){
-            return null;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Survey response not found for UID: " + UID);
         }
         SurveyResponse res = surveyResponse.get();
 
@@ -100,7 +100,9 @@ public class SurveyResponseController {
         SecurityTerminateFlag flag = securityTerminateFlagRepository.findByProjectId(project.getProjectIdentifier());
         Optional<User> vendor = userRepository.findByUsername(res.getVendorUsername());
 
-        if(!(surveyResponse.get().getStatus() == SurveyStatus.IN_PROGRESS)) return null;
+        if(!(surveyResponse.get().getStatus() == SurveyStatus.IN_PROGRESS)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Survey response for UID " + UID + " is not in progress");
+        }
 
         // check for ip address change
         String ipAddress = requestLogService.getClientIpAddress(request);
@@ -151,9 +153,7 @@ public class SurveyResponseController {
 
         projectVendorService.incrementSurveyCount(res.getVendorUsername(), res.getProjectId(), status);
 
-        notifyVendorWithUid(vendor.get(), status, UID);
-
-        return renderSurveyStatusPage(UID, status, request);
+        return notifyVendorWithUid(vendor.get(), status, UID);
     }
 
     private ModelAndView renderSurveyStatusPage(String UID, SurveyStatus status, HttpServletRequest request) {
@@ -306,9 +306,14 @@ public class SurveyResponseController {
             UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(vendorApiUrl);
             ResponseEntity<String> response = restTemplate.getForEntity(builder.toUriString(), String.class);
 
-            return ResponseEntity.ok("Vendor notified successfully: " + response.getBody());
+            ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
+            if (response.getHeaders().getContentType() != null) {
+                responseBuilder.contentType(response.getHeaders().getContentType());
+            }
+            return responseBuilder.body(response.getBody());
 
         } catch (Exception e) {
+            logger.error("Failed to notify vendor at URL: {}", vendorApiUrl, e);
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to notify vendor: " + e.getMessage());
